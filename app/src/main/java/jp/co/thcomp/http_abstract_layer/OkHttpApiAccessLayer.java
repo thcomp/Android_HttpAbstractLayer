@@ -42,7 +42,6 @@ class OkHttpApiAccessLayer extends ApiAccessLayer {
 
     private Request createRequest(MethodType methodType){
         Request.Builder builder = new Request.Builder();
-        Request ret = null;
         StringBuilder uriBuilder = new StringBuilder(mUri.toString());
 
         if (MethodType.GET.equals(methodType)){
@@ -57,7 +56,7 @@ class OkHttpApiAccessLayer extends ApiAccessLayer {
             builder.addHeader(header.mName, header.mValue);
         }
 
-        return ret;
+        return builder.build();
     }
 
     private RequestBody createRequestBody(MethodType methodType){
