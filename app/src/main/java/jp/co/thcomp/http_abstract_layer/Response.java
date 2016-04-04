@@ -9,9 +9,11 @@ public interface Response {
         public String getValue();
     }
 
+    public String getRequestUrl();
     public int getStatusCode();
     public String getMimeType();
     public List<Header> getHeaders(String name);
     public InputStream getEntity();
     public Exception getException();
+    public void setException();
 }

@@ -7,7 +7,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public abstract class ApiAccessLayer {
+public abstract class HttpAccessLayer {
     public static enum Accessor{
         OkHttp,
         Volley,
@@ -24,12 +24,12 @@ public abstract class ApiAccessLayer {
         PUT;
     }
 
-    public static ApiAccessLayer getInstance(Context context){
+    public static HttpAccessLayer getInstance(Context context){
         return getInstance(context, DefaultAccessor);
     }
 
-    public static synchronized ApiAccessLayer getInstance(Context context, Accessor accessor){
-        ApiAccessLayer ret = null;
+    public static synchronized HttpAccessLayer getInstance(Context context, Accessor accessor){
+        HttpAccessLayer ret = null;
 
         if(accessor == null){
             accessor = DefaultAccessor;
@@ -37,10 +37,10 @@ public abstract class ApiAccessLayer {
         if(accessor.equals(Accessor.OkHttp)){
             ret = new OkHttpApiAccessLayer(context);
         }else if(accessor.equals(Accessor.Volley)){
-            // TODO: make ApiAccessLayer for Volley
+            // TODO: make HttpAccessLayer for Volley
             ret = new OkHttpApiAccessLayer(context);
         }else if(accessor.equals(Accessor.URLConnection)){
-            // TODO: make ApiAccessLayer for URLConnection
+            // TODO: make HttpAccessLayer for URLConnection
             ret = new OkHttpApiAccessLayer(context);
         }
 
@@ -53,26 +53,26 @@ public abstract class ApiAccessLayer {
     protected ArrayList<RequestHeader> mHeaderList = new ArrayList<RequestHeader>();
     protected AbstractResponseCallback mResponseCallback;
 
-    protected ApiAccessLayer(Context context){
+    protected HttpAccessLayer(Context context){
         mContext = context;
     }
 
-    public ApiAccessLayer uri(String uri){
+    public HttpAccessLayer uri(String uri){
         mUri = Uri.parse(uri);
         return this;
     }
 
-    public ApiAccessLayer requestHeader(String name, String value){
+    public HttpAccessLayer requestHeader(String name, String value){
         mHeaderList.add(new RequestHeader(name, value));
         return this;
     }
 
-    public ApiAccessLayer requestParam(RequestParameter param){
+    public HttpAccessLayer requestParam(RequestParameter param){
         mParameterList.add(param);
         return this;
     }
 
-    public ApiAccessLayer responseCallback(AbstractResponseCallback callback){
+    public HttpAccessLayer responseCallback(AbstractResponseCallback callback){
         mResponseCallback = callback;
         return this;
     }

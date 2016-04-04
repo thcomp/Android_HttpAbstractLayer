@@ -18,7 +18,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import okio.BufferedSink;
 
-class OkHttpApiAccessLayer extends ApiAccessLayer {
+class OkHttpApiAccessLayer extends HttpAccessLayer {
     private OkHttpClient mClient = null;
 
     protected OkHttpApiAccessLayer(Context context) {
@@ -136,6 +136,11 @@ class OkHttpApiAccessLayer extends ApiAccessLayer {
         @Override
         public String getMimeType() {
             return mResponse != null ? mResponse.header("Content-Type", null) : null;
+        }
+
+        @Override
+        public String getRequestUrl() {
+            return mResponse != null ? mResponse.request().url().toString();
         }
 
         @Override
