@@ -1,6 +1,7 @@
 package jp.co.thcomp.http_abstract_layer;
 
 import android.content.Context;
+import android.os.Handler;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -79,15 +80,41 @@ class OkHttpApiAccessLayer extends HttpAccessLayer {
     private okhttp3.Callback mCallback = new okhttp3.Callback() {
         @Override
         public void onFailure(okhttp3.Call call, IOException e) {
-            if(mResponseCallback instanceof FailResponseCallback){
-                ((FailResponseCallback)mResponseCallback).onFail(new ExternalResponse(e));
+            if(Thread.currentThread().equals(mContext.getMainLooper().getThread())){
+                if(mResponseCallback instanceof FailResponseCallback){
+                    ((FailResponseCallback)mResponseCallback).onFail(new ExternalResponse(e));
+                }
+            }else{
+                final IOException fException = e;
+                Handler handler = new Handler(mContext.getMainLooper());
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(mResponseCallback instanceof FailResponseCallback){
+                            ((FailResponseCallback)mResponseCallback).onFail(new ExternalResponse(fException));
+                        }
+                    }
+                });
             }
         }
 
         @Override
         public void onResponse(okhttp3.Call call, Response response) throws IOException {
-            if(mResponseCallback instanceof SuccessResponseCallback){
-                ((SuccessResponseCallback)mResponseCallback).onSuccess(new ExternalResponse(response));
+            if(Thread.currentThread().equals(mContext.getMainLooper().getThread())){
+                if(mResponseCallback instanceof SuccessResponseCallback){
+                    ((SuccessResponseCallback)mResponseCallback).onSuccess(new ExternalResponse(response));
+                }
+            }else{
+                final Response fResponse = response;
+                Handler handler = new Handler(mContext.getMainLooper());
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(mResponseCallback instanceof SuccessResponseCallback){
+                            ((SuccessResponseCallback)mResponseCallback).onSuccess(new ExternalResponse(fResponse));
+                        }
+                    }
+                });
             }
         }
     };
