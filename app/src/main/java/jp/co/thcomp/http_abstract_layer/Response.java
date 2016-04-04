@@ -15,5 +15,5 @@ public interface Response {
     public List<Header> getHeaders(String name);
     public InputStream getEntity();
     public Exception getException();
-    public void setException();
+    public void setException(Exception exception);
 }

@@ -2,10 +2,35 @@ package jp.co.thcomp.http_abstract_layer;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.zip.GZIPInputStream;
 
 public class Utility {
+    public static InputStream getDecodedStream(Response response){
+        List<Response.Header> headers = response.getHeaders(Constant.HeaderContentEncoding);
+        InputStream ret = null;
+
+        if(headers != null && headers.size() > 0){
+            Response.Header contentEncodingHeader = headers.get(0);
+            if(contentEncodingHeader.getValue() != null){
+                if(contentEncodingHeader.getValue().toLowerCase().equals("gzip")){
+                    try {
+                        ret = new GZIPInputStream(response.getEntity());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }else{
+                // if it is not specified, it returns just entity.
+                ret = response.getEntity();
+            }
+        }
+
+        return ret;
+    }
+
     public static String getStringParameter(RequestParameter parameter){
         String ret = null;
 

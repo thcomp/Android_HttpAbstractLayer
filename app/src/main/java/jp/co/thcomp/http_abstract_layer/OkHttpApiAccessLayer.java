@@ -145,14 +145,14 @@ class OkHttpApiAccessLayer extends HttpAccessLayer {
 
     private static class ExternalResponse implements jp.co.thcomp.http_abstract_layer.Response{
         private Response mResponse;
-        private Exception mConnectErrorException;
+        private Exception mException;
 
         public ExternalResponse(Response response){
             mResponse = response;
         }
 
         public ExternalResponse(Exception exception){
-            mConnectErrorException = exception;
+            mException = exception;
         }
 
         @Override
@@ -167,7 +167,7 @@ class OkHttpApiAccessLayer extends HttpAccessLayer {
 
         @Override
         public String getRequestUrl() {
-            return mResponse != null ? mResponse.request().url().toString();
+            return mResponse != null ? mResponse.request().url().toString() : null;
         }
 
         @Override
@@ -209,7 +209,12 @@ class OkHttpApiAccessLayer extends HttpAccessLayer {
 
         @Override
         public Exception getException() {
-            return mConnectErrorException;
+            return mException;
+        }
+
+        @Override
+        public void setException(Exception exception) {
+            mException = exception;
         }
     }
 

@@ -55,6 +55,9 @@ public abstract class HttpAccessLayer {
 
     protected HttpAccessLayer(Context context){
         mContext = context;
+
+        // set support encoding type
+        requestHeader(Constant.HeaderAcceptEncoding, "gzip");
     }
 
     public HttpAccessLayer uri(String uri){

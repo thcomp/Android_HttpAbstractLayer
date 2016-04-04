@@ -14,4 +14,7 @@ public class Constant {
     public static final String MIME_OctetStream = "application/octet-stream";
     public static final String MIME_JSON = "application/json";
     public static final String MIME_MessagePack = "application/x-msgpack";
+
+    public static final String HeaderAcceptEncoding = "Accept-Encoding";
+    public static final String HeaderContentEncoding = "Content-Encoding";
 }
