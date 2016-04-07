@@ -1,7 +1,6 @@
 package jp.co.thcomp.http_abstract_layer;
 
 import android.content.Context;
-import android.os.Handler;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -80,42 +79,12 @@ class OkHttpApiAccessLayer extends HttpAccessLayer {
     private okhttp3.Callback mCallback = new okhttp3.Callback() {
         @Override
         public void onFailure(okhttp3.Call call, IOException e) {
-            if(Thread.currentThread().equals(mContext.getMainLooper().getThread())){
-                if(mResponseCallback instanceof FailResponseCallback){
-                    ((FailResponseCallback)mResponseCallback).onFail(new ExternalResponse(e));
-                }
-            }else{
-                final IOException fException = e;
-                Handler handler = new Handler(mContext.getMainLooper());
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(mResponseCallback instanceof FailResponseCallback){
-                            ((FailResponseCallback)mResponseCallback).onFail(new ExternalResponse(fException));
-                        }
-                    }
-                });
-            }
+            callFailCallback(new ExternalResponse(e));
         }
 
         @Override
         public void onResponse(okhttp3.Call call, Response response) throws IOException {
-            if(Thread.currentThread().equals(mContext.getMainLooper().getThread())){
-                if(mResponseCallback instanceof SuccessResponseCallback){
-                    ((SuccessResponseCallback)mResponseCallback).onSuccess(new ExternalResponse(response));
-                }
-            }else{
-                final Response fResponse = response;
-                Handler handler = new Handler(mContext.getMainLooper());
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(mResponseCallback instanceof SuccessResponseCallback){
-                            ((SuccessResponseCallback)mResponseCallback).onSuccess(new ExternalResponse(fResponse));
-                        }
-                    }
-                });
-            }
+            callSuccessCallback(new ExternalResponse(response));
         }
     };
 
@@ -245,21 +214,36 @@ class OkHttpApiAccessLayer extends HttpAccessLayer {
     }
 
     private static class MultiPartRequestBody extends RequestBody{
-        private List<RequestParameter> mRequestParameterList;
+        //private List<RequestParameter> mRequestParameterList;
+        private byte[] mData;
+        private IOException mReservedException;
 
         public MultiPartRequestBody(List<RequestParameter> requestParameterList){
-            mRequestParameterList = requestParameterList;
+            //mRequestParameterList = requestParameterList;
+            try {
+                mData = Utility.getMultipartFormData(requestParameterList);
+            }catch(IOException e){
+                mReservedException = e;
+            }
+        }
+
+        @Override
+        public long contentLength() throws IOException {
+            if(mReservedException != null){
+                throw mReservedException;
+            }
+            return mData.length;
         }
 
         @Override
         public MediaType contentType() {
-            return MediaType.parse("multipart/form-data; boundary=----" + Constant.MultipartBoundary);
+            //return MediaType.parse("multipart/form-data; boundary=----" + Constant.MultipartBoundary);
+            return MediaType.parse("multipart/form-data; boundary=" + Constant.MultipartBoundary);
         }
 
         @Override
         public void writeTo(BufferedSink sink) throws IOException {
-            byte[] multiFormData = Utility.getMultipartFormData(mRequestParameterList);
-            sink.write(multiFormData);
+            sink.write(mData);
             sink.flush();
         }
     }

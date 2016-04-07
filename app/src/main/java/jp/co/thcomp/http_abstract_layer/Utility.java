@@ -22,10 +22,11 @@ public class Utility {
                         e.printStackTrace();
                     }
                 }
-            }else{
-                // if it is not specified, it returns just entity.
-                ret = response.getEntity();
             }
+        }
+
+        if(ret == null){
+            ret = response.getEntity();
         }
 
         return ret;
@@ -98,9 +99,7 @@ public class Utility {
                 while(readAgain){
                     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                     readAgain = fileParameter.output(outputStream);
-                    if(readAgain){
-                        outputSink.write(outputStream.toByteArray());
-                    }
+                    outputSink.write(outputStream.toByteArray());
                 }
 
                 outputSink.write(Constant.MultipartCRLF);

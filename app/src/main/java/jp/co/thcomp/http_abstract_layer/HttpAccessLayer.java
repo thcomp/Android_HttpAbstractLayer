@@ -106,6 +106,36 @@ public abstract class HttpAccessLayer {
         return builder.toString();
     }
 
+    protected void callSuccessCallback(final Response response){
+        if(mResponseCallback != null && mResponseCallback instanceof SuccessResponseCallback){
+            if(mContext.getMainLooper().getThread().equals(Thread.currentThread())){
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        callSuccessCallback(response);
+                    }
+                }).start();
+            }else{
+                ((SuccessResponseCallback)mResponseCallback).onSuccess(response);
+            }
+        }
+    }
+
+    protected void callFailCallback(final Response response){
+        if(mResponseCallback != null && mResponseCallback instanceof FailResponseCallback){
+            if(mContext.getMainLooper().getThread().equals(Thread.currentThread())){
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        callFailCallback(response);
+                    }
+                }).start();
+            }else{
+                ((FailResponseCallback)mResponseCallback).onFail(response);
+            }
+        }
+    }
+
     public abstract boolean get();
 
     public abstract boolean post();
