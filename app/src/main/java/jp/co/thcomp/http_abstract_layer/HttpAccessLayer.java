@@ -13,7 +13,7 @@ public abstract class HttpAccessLayer {
         Volley,
         URLConnection,
     }
-    protected static final Accessor DefaultAccessor = Accessor.OkHttp;
+    protected static final Accessor DefaultAccessor = Accessor.URLConnection;
 
     public static enum MethodType{
         HEAD,
@@ -40,8 +40,7 @@ public abstract class HttpAccessLayer {
             // TODO: make HttpAccessLayer for Volley
             ret = new OkHttpApiAccessLayer(context);
         }else if(accessor.equals(Accessor.URLConnection)){
-            // TODO: make HttpAccessLayer for URLConnection
-            ret = new OkHttpApiAccessLayer(context);
+            ret = new URLConnectionApiAccessLayer(context);
         }
 
         return ret;
