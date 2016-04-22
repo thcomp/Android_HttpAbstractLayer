@@ -4,10 +4,15 @@ import android.content.Context;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 class URLConnectionApiAccessLayer extends HttpAccessLayer {
     protected URLConnectionApiAccessLayer(Context context) {
@@ -21,6 +26,7 @@ class URLConnectionApiAccessLayer extends HttpAccessLayer {
 
         try {
             connection = createUrlConnection(MethodType.GET);
+            callResponseCallback(connection);
         } catch (IOException e) {
             ret = false;
         }
@@ -35,6 +41,7 @@ class URLConnectionApiAccessLayer extends HttpAccessLayer {
 
         try{
             connection = createUrlConnection(HttpAccessLayer.MethodType.POST);
+            callResponseCallback(connection);
         } catch (IOException e) {
             ret = false;
         }
@@ -103,6 +110,15 @@ class URLConnectionApiAccessLayer extends HttpAccessLayer {
         return ret;
     }
 
+    private void callResponseCallback(HttpURLConnection connection){
+        ExternalResponse response = new ExternalResponse(connection);
+        if(response.getStatusCode() == 200){
+            callSuccessCallback(response);
+        }else{
+            callFailCallback(response);
+        }
+    }
+
     private static interface LocalRequestBody{
         public String contentType();
         public void writeTo(OutputStream sink) throws IOException;
@@ -158,6 +174,135 @@ class URLConnectionApiAccessLayer extends HttpAccessLayer {
         public void writeTo(OutputStream sink) throws IOException {
             sink.write(mData);
             sink.flush();
+        }
+    }
+
+    private static class ExternalHeader implements jp.co.thcomp.http_abstract_layer.Response.Header{
+        private String mName;
+        private String mValue;
+
+        public ExternalHeader(String name, String value){
+            if(name == null || value == null){
+                throw new NullPointerException();
+            }
+
+            mName = name;
+            mValue = value;
+        }
+
+        @Override
+        public String getName() {
+            return mName;
+        }
+
+        @Override
+        public String getValue() {
+            return mValue;
+        }
+    }
+
+    private static class ExternalResponse implements jp.co.thcomp.http_abstract_layer.Response{
+        private HttpURLConnection mConnection;
+        private Exception mException;
+
+        public ExternalResponse(HttpURLConnection connection){
+            mConnection = connection;
+        }
+
+        public ExternalResponse(Exception exception){
+            mException = exception;
+        }
+
+        @Override
+        public int getStatusCode() {
+            int statusCode = -1;
+
+            try{
+                statusCode = mConnection.getResponseCode();
+            }catch(Exception e){
+            }
+
+            return statusCode;
+        }
+
+        @Override
+        public String getMimeType() {
+            String mimeType = null;
+
+            try{
+                mimeType = mConnection.getHeaderField("Content-Type");
+            }catch (Exception e){
+            }
+
+            return mimeType;
+        }
+
+        @Override
+        public String getRequestUrl() {
+            String requestUrl = null;
+
+            try{
+                requestUrl = mConnection.getURL().toString();
+            }catch (Exception e){
+            }
+
+            return requestUrl;
+        }
+
+        @Override
+        public List<Header> getHeaders(String name) {
+            ArrayList<Header> retList = new ArrayList<Header>();
+
+            if(mConnection != null){
+                Map<String, List<String>> valueMap = mConnection.getHeaderFields();
+
+                if(name != null && name.length() > 0){
+                    // get specified name of header
+                    List<String> headerList = valueMap.get(name);
+
+                    for(String value : headerList){
+                        retList.add(new ExternalHeader(name, value));
+                    }
+                }else{
+                    // get all headers
+                    Set<Map.Entry<String, List<String>>> entrySet = valueMap.entrySet();
+                    Iterator<Map.Entry<String, List<String>>> iterator = entrySet.iterator();
+
+                    while(iterator.hasNext()){
+                        Map.Entry<String, List<String>> entry = iterator.next();
+                        String headerName = entry.getKey();
+                        List<String> headerValueList = entry.getValue();
+
+                        for(String headerValue : headerValueList){
+                            retList.add(new ExternalHeader(headerName, headerValue));
+                        }
+                    }
+                }
+            }
+
+            return retList;
+        }
+
+        @Override
+        public InputStream getEntity() {
+            InputStream ret = null;
+
+            try{
+                ret = mConnection.getInputStream();
+            }catch (IOException e){
+            }
+
+            return ret;
+        }
+
+        @Override
+        public Exception getException() {
+            return mException;
+        }
+
+        @Override
+        public void setException(Exception exception) {
+            mException = exception;
         }
     }
 }
