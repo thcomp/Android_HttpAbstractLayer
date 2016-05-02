@@ -205,8 +205,8 @@ class OkHttpApiAccessLayer extends HttpAccessLayer {
 
             while(readAgain){
                 ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                readAgain = mTargetRequestParameter.output(outputStream);
-                if(readAgain){
+                readAgain = !mTargetRequestParameter.output(outputStream);
+                if(!readAgain){
                     sink.write(outputStream.toByteArray());
                 }
             }
