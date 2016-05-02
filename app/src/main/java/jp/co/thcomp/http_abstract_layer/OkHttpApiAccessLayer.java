@@ -147,8 +147,10 @@ class OkHttpApiAccessLayer extends HttpAccessLayer {
                 if(name != null && name.length() > 0){
                     // get specified name of header
                     List<String> valueList = mResponse.headers(name);
-                    for(String value : valueList){
-                        retList.add(new ExternalHeader(name, value));
+                    if(valueList != null && valueList.size() > 0) {
+                        for (String value : valueList) {
+                            retList.add(new ExternalHeader(name, value));
+                        }
                     }
                 }else{
                     // get all headers
@@ -161,8 +163,10 @@ class OkHttpApiAccessLayer extends HttpAccessLayer {
                         String headerName = entry.getKey();
                         List<String> headerValueList = entry.getValue();
 
-                        for(String headerValue : headerValueList){
-                            retList.add(new ExternalHeader(headerName, headerValue));
+                        if(headerValueList != null && headerValueList.size() > 0){
+                            for(String headerValue : headerValueList){
+                                retList.add(new ExternalHeader(headerName, headerValue));
+                            }
                         }
                     }
                 }

@@ -259,9 +259,10 @@ class URLConnectionApiAccessLayer extends HttpAccessLayer {
                 if(name != null && name.length() > 0){
                     // get specified name of header
                     List<String> headerList = valueMap.get(name);
-
-                    for(String value : headerList){
-                        retList.add(new ExternalHeader(name, value));
+                    if(headerList != null && headerList.size() > 0) {
+                        for (String value : headerList) {
+                            retList.add(new ExternalHeader(name, value));
+                        }
                     }
                 }else{
                     // get all headers
@@ -272,9 +273,10 @@ class URLConnectionApiAccessLayer extends HttpAccessLayer {
                         Map.Entry<String, List<String>> entry = iterator.next();
                         String headerName = entry.getKey();
                         List<String> headerValueList = entry.getValue();
-
-                        for(String headerValue : headerValueList){
-                            retList.add(new ExternalHeader(headerName, headerValue));
+                        if(headerValueList != null && headerValueList.size() > 0) {
+                            for (String headerValue : headerValueList) {
+                                retList.add(new ExternalHeader(headerName, headerValue));
+                            }
                         }
                     }
                 }
