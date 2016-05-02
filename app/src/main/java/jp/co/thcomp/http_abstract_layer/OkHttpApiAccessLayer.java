@@ -2,6 +2,11 @@ package jp.co.thcomp.http_abstract_layer;
 
 import android.content.Context;
 
+import com.burgstaller.okhttp.AuthenticationCacheInterceptor;
+import com.burgstaller.okhttp.digest.CachingAuthenticator;
+import com.burgstaller.okhttp.digest.Credentials;
+import com.burgstaller.okhttp.digest.DigestAuthenticator;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,6 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -19,24 +25,23 @@ import okhttp3.Response;
 import okio.BufferedSink;
 
 class OkHttpApiAccessLayer extends HttpAccessLayer {
-    private OkHttpClient mClient = null;
-
     protected OkHttpApiAccessLayer(Context context) {
         super(context);
-        mClient = new OkHttpClient();
     }
 
     @Override
     public boolean get() {
         Request request = createRequest(MethodType.GET);
-        mClient.newCall(request).enqueue(mCallback);
+        OkHttpClient client = createHttpClient();
+        client.newCall(request).enqueue(mCallback);
         return true;
     }
 
     @Override
     public boolean post() {
         Request request = createRequest(MethodType.POST);
-        mClient.newCall(request).enqueue(mCallback);
+        OkHttpClient client = createHttpClient();
+        client.newCall(request).enqueue(mCallback);
         return true;
     }
 
@@ -54,6 +59,21 @@ class OkHttpApiAccessLayer extends HttpAccessLayer {
 
         for(RequestHeader header : mHeaderList){
             builder.addHeader(header.mName, header.mValue);
+        }
+
+        return builder.build();
+    }
+
+    private OkHttpClient createHttpClient(){
+        OkHttpClient.Builder builder = new OkHttpClient.Builder();
+
+        if(mAuthentication != null){
+            Credentials credentials = new Credentials(mAuthentication.getUserName(), new String(mAuthentication.getPassword()));
+            DigestAuthenticator authenticator = new DigestAuthenticator(credentials);
+            builder.authenticator(authenticator);
+
+            final Map<String, CachingAuthenticator> authCache = new ConcurrentHashMap<String, CachingAuthenticator>();
+            builder.interceptors().add(new AuthenticationCacheInterceptor(authCache));
         }
 
         return builder.build();

@@ -6,7 +6,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.Authenticator;
 import java.net.HttpURLConnection;
+import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -61,6 +63,9 @@ class URLConnectionApiAccessLayer extends HttpAccessLayer {
         if(url != null){
             try {
                 ret = (HttpURLConnection)url.openConnection();
+                if(mAuthentication != null) {
+                    Authenticator.setDefault(mLocalAuthenticator);
+                }
             } catch (IOException e) {
             }
 
@@ -118,6 +123,23 @@ class URLConnectionApiAccessLayer extends HttpAccessLayer {
             callFailCallback(response);
         }
     }
+
+    private Authenticator mLocalAuthenticator = new Authenticator() {
+        @Override
+        protected PasswordAuthentication getPasswordAuthentication() {
+            return mAuthentication;
+        }
+
+        @Override
+        protected URL getRequestingURL() {
+            return super.getRequestingURL();
+        }
+
+        @Override
+        protected RequestorType getRequestorType() {
+            return super.getRequestorType();
+        }
+    };
 
     private static interface LocalRequestBody{
         public String contentType();

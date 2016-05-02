@@ -5,6 +5,7 @@ import android.net.Uri;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.PasswordAuthentication;
 import java.util.ArrayList;
 
 public abstract class HttpAccessLayer {
@@ -48,6 +49,7 @@ public abstract class HttpAccessLayer {
 
     protected Context mContext;
     protected Uri mUri;
+    protected PasswordAuthentication mAuthentication;
     protected ArrayList<RequestParameter> mParameterList = new ArrayList<RequestParameter>();
     protected ArrayList<RequestHeader> mHeaderList = new ArrayList<RequestHeader>();
     protected AbstractResponseCallback mResponseCallback;
@@ -71,6 +73,11 @@ public abstract class HttpAccessLayer {
 
     public HttpAccessLayer requestParam(RequestParameter param){
         mParameterList.add(param);
+        return this;
+    }
+
+    public HttpAccessLayer setAuthentication(PasswordAuthentication authentication){
+        mAuthentication = authentication;
         return this;
     }
 
@@ -138,4 +145,9 @@ public abstract class HttpAccessLayer {
     public abstract boolean get();
 
     public abstract boolean post();
+
+    public static interface HttpAccessAuthenticator{
+
+    }
+
 }
