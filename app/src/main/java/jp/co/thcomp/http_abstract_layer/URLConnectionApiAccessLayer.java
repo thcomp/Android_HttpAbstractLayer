@@ -30,6 +30,7 @@ class URLConnectionApiAccessLayer extends HttpAccessLayer {
             connection = createUrlConnection(MethodType.GET);
             callResponseCallback(connection);
         } catch (IOException e) {
+            callResponseCallback(connection);
             ret = false;
         }
 
@@ -45,6 +46,7 @@ class URLConnectionApiAccessLayer extends HttpAccessLayer {
             connection = createUrlConnection(HttpAccessLayer.MethodType.POST);
             callResponseCallback(connection);
         } catch (IOException e) {
+            callResponseCallback(connection);
             ret = false;
         }
 
