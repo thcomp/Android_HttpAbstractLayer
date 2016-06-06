@@ -23,34 +23,48 @@ class URLConnectionApiAccessLayer extends HttpAccessLayer {
 
     @Override
     public boolean get() {
-        boolean ret = true;
-        HttpURLConnection connection = null;
+        if(Thread.currentThread().equals(mContext.getMainLooper().getThread())){
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    get();
+                }
+            }).start();
+        }else{
+            HttpURLConnection connection = null;
 
-        try {
-            connection = createUrlConnection(MethodType.GET);
-            callResponseCallback(connection);
-        } catch (IOException e) {
-            callResponseCallback(connection);
-            ret = false;
+            try {
+                connection = createUrlConnection(MethodType.GET);
+                callResponseCallback(connection);
+            } catch (IOException e) {
+                callResponseCallback(connection);
+            }
         }
 
-        return ret;
+        return true;
     }
 
     @Override
     public boolean post() {
-        boolean ret = true;
-        HttpURLConnection connection = null;
+        if(Thread.currentThread().equals(mContext.getMainLooper().getThread())){
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    post();
+                }
+            }).start();
+        }else{
+            HttpURLConnection connection = null;
 
-        try{
-            connection = createUrlConnection(HttpAccessLayer.MethodType.POST);
-            callResponseCallback(connection);
-        } catch (IOException e) {
-            callResponseCallback(connection);
-            ret = false;
+            try{
+                connection = createUrlConnection(HttpAccessLayer.MethodType.POST);
+                callResponseCallback(connection);
+            } catch (IOException e) {
+                callResponseCallback(connection);
+            }
         }
 
-        return ret;
+        return true;
     }
 
     private HttpURLConnection createUrlConnection(HttpAccessLayer.MethodType methodType) throws IOException {
