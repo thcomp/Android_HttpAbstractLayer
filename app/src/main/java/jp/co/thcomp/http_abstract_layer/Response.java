@@ -11,6 +11,7 @@ public interface Response {
 
     public String getRequestUrl();
     public int getStatusCode();
+    public String getReasonPhrase();
     public String getMimeType();
     public List<Header> getHeaders(String name);
     public InputStream getEntity();

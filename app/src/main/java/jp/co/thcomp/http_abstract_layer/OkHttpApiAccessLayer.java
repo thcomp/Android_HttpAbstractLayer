@@ -150,6 +150,11 @@ class OkHttpApiAccessLayer extends HttpAccessLayer {
         }
 
         @Override
+        public String getReasonPhrase() {
+            return mResponse != null ? mResponse.message() : null;
+        }
+
+        @Override
         public String getMimeType() {
             return mResponse != null ? mResponse.header("Content-Type", null) : null;
         }

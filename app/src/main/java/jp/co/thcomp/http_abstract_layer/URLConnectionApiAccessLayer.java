@@ -250,6 +250,18 @@ class URLConnectionApiAccessLayer extends HttpAccessLayer {
         }
 
         @Override
+        public String getReasonPhrase() {
+            String reasonPhrase = null;
+
+            try{
+                reasonPhrase = mConnection.getResponseMessage();
+            }catch(Exception e){
+            }
+
+            return reasonPhrase;
+        }
+
+        @Override
         public String getMimeType() {
             String mimeType = null;
 
