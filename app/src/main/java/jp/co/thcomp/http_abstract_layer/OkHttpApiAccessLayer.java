@@ -10,6 +10,7 @@ import com.burgstaller.okhttp.digest.DigestAuthenticator;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -104,7 +105,12 @@ class OkHttpApiAccessLayer extends HttpAccessLayer {
 
         @Override
         public void onResponse(okhttp3.Call call, Response response) throws IOException {
-            callSuccessCallback(new ExternalResponse(response));
+            ExternalResponse extResponse = new ExternalResponse(response);
+            if(extResponse.getStatusCode() == HttpURLConnection.HTTP_OK){
+                callSuccessCallback(extResponse);
+            }else{
+                callFailCallback(extResponse);
+            }
         }
     };
 
