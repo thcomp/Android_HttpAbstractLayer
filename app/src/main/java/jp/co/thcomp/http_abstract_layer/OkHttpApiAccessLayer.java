@@ -220,6 +220,13 @@ class OkHttpApiAccessLayer extends HttpAccessLayer {
         public void setException(Exception exception) {
             mException = exception;
         }
+
+        @Override
+        public void close() {
+            if(mResponse != null){
+                mResponse.body().close();
+            }
+        }
     }
 
     private static class SinglePartRequestBody extends RequestBody{

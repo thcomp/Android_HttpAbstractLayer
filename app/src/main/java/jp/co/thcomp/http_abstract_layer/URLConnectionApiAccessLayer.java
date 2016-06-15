@@ -356,5 +356,16 @@ class URLConnectionApiAccessLayer extends HttpAccessLayer {
         public void setException(Exception exception) {
             mException = exception;
         }
+
+        @Override
+        public void close() {
+            if(mConnection != null){
+                try {
+                    mConnection.getInputStream().close();
+                } catch (Exception e) {
+                }
+                mConnection.disconnect();
+            }
+        }
     }
 }

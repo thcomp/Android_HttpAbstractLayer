@@ -17,4 +17,5 @@ public interface Response {
     public InputStream getEntity();
     public Exception getException();
     public void setException(Exception exception);
+    public void close();
 }
