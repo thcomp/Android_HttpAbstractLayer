@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -72,6 +73,25 @@ class OkHttpApiAccessLayer extends HttpAccessLayer {
             Credentials credentials = new Credentials(mAuthentication.getUserName(), new String(mAuthentication.getPassword()));
             DigestAuthenticator authenticator = new DigestAuthenticator(credentials);
             builder.authenticator(authenticator);
+
+            if(mOptionMap.size() > 0){
+                Set<Map.Entry<OptionType, Object>> entrySet = mOptionMap.entrySet();
+                Iterator<Map.Entry<OptionType, Object>> iterator = entrySet.iterator();
+                while(iterator.hasNext()){
+                    Map.Entry<OptionType, Object> entry = iterator.next();
+                    try {
+                        switch (entry.getKey()) {
+                            case ConnectTimeoutMS:
+                                builder.connectTimeout((int) entry.getValue(), TimeUnit.MILLISECONDS);
+                                break;
+                            case ReadTimeoutMS:
+                                builder.readTimeout((int) entry.getValue(), TimeUnit.MILLISECONDS);
+                                break;
+                        }
+                    }catch(Exception e){
+                    }
+                }
+            }
 
             final Map<String, CachingAuthenticator> authCache = new ConcurrentHashMap<String, CachingAuthenticator>();
             builder.interceptors().add(new AuthenticationCacheInterceptor(authCache));
