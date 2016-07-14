@@ -85,6 +85,25 @@ class URLConnectionApiAccessLayer extends HttpAccessLayer {
             } catch (IOException e) {
             }
 
+            if(mOptionMap.size() > 0){
+                Set<Map.Entry<OptionType, Object>> entrySet = mOptionMap.entrySet();
+                Iterator<Map.Entry<OptionType, Object>> iterator = entrySet.iterator();
+                while(iterator.hasNext()){
+                    Map.Entry<OptionType, Object> entry = iterator.next();
+                    try {
+                        switch (entry.getKey()) {
+                            case ConnectTimeoutMS:
+                                ret.setConnectTimeout((int)entry.getValue());
+                                break;
+                            case ReadTimeoutMS:
+                                ret.setReadTimeout((int) entry.getValue());
+                                break;
+                        }
+                    }catch(Exception e){
+                    }
+                }
+            }
+
             if(mHeaderList.size() > 0) {
                 ret.setDoOutput(true);
                 for (RequestHeader header : mHeaderList) {

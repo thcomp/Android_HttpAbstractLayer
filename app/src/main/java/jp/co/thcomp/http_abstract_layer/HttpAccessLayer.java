@@ -7,6 +7,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.PasswordAuthentication;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public abstract class HttpAccessLayer {
     public static enum Accessor{
@@ -54,6 +55,12 @@ public abstract class HttpAccessLayer {
     protected ArrayList<RequestHeader> mHeaderList = new ArrayList<RequestHeader>();
     protected AbstractResponseCallback mResponseCallback;
     protected boolean mAutoResponseClose = false;
+    protected HashMap<OptionType, Object> mOptionMap = new HashMap<OptionType, Object>();
+
+    protected static enum OptionType {
+        ConnectTimeoutMS,        // Value = Integer
+        ReadTimeoutMS,        // Value = Integer
+    }
 
     protected HttpAccessLayer(Context context){
         mContext = context;
@@ -88,6 +95,16 @@ public abstract class HttpAccessLayer {
 
     public HttpAccessLayer responseCallback(AbstractResponseCallback callback){
         mResponseCallback = callback;
+        return this;
+    }
+
+    public HttpAccessLayer connectTimeout(int timeoutMS){
+        mOptionMap.put(OptionType.ConnectTimeoutMS, timeoutMS);
+        return this;
+    }
+
+    public HttpAccessLayer readTimeout(int timeoutMS){
+        mOptionMap.put(OptionType.ReadTimeoutMS, timeoutMS);
         return this;
     }
 
