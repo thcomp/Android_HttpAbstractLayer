@@ -53,6 +53,7 @@ public abstract class HttpAccessLayer {
     protected ArrayList<RequestParameter> mParameterList = new ArrayList<RequestParameter>();
     protected ArrayList<RequestHeader> mHeaderList = new ArrayList<RequestHeader>();
     protected AbstractResponseCallback mResponseCallback;
+    protected boolean mAutoResponseClose = false;
 
     protected HttpAccessLayer(Context context){
         mContext = context;
@@ -64,6 +65,10 @@ public abstract class HttpAccessLayer {
     public HttpAccessLayer uri(String uri){
         mUri = Uri.parse(uri);
         return this;
+    }
+
+    public void autoResponseClose(){
+        mAutoResponseClose = true;
     }
 
     public HttpAccessLayer requestHeader(String name, String value){
@@ -123,6 +128,9 @@ public abstract class HttpAccessLayer {
                 }).start();
             }else{
                 ((SuccessResponseCallback)mResponseCallback).onSuccess(response);
+                if(mAutoResponseClose) {
+                    response.close();
+                }
             }
         }
     }
@@ -138,6 +146,9 @@ public abstract class HttpAccessLayer {
                 }).start();
             }else{
                 ((FailResponseCallback)mResponseCallback).onFail(response);
+                if(mAutoResponseClose) {
+                    response.close();
+                }
             }
         }
     }

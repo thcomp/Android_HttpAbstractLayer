@@ -242,6 +242,7 @@ class URLConnectionApiAccessLayer extends HttpAccessLayer {
     private static class ExternalResponse implements jp.co.thcomp.http_abstract_layer.Response{
         private HttpURLConnection mConnection;
         private Exception mException;
+        private boolean mClosed = false;
 
         public ExternalResponse(HttpURLConnection connection){
             mConnection = connection;
@@ -359,12 +360,13 @@ class URLConnectionApiAccessLayer extends HttpAccessLayer {
 
         @Override
         public void close() {
-            if(mConnection != null){
+            if(mConnection != null && !mClosed){
                 try {
                     mConnection.getInputStream().close();
                 } catch (Exception e) {
                 }
                 mConnection.disconnect();
+                mClosed = true;
             }
         }
     }

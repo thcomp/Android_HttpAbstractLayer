@@ -141,6 +141,7 @@ class OkHttpApiAccessLayer extends HttpAccessLayer {
     private static class ExternalResponse implements jp.co.thcomp.http_abstract_layer.Response{
         private Response mResponse;
         private Exception mException;
+        private boolean mClosed = false;
 
         public ExternalResponse(Response response){
             mResponse = response;
@@ -223,8 +224,9 @@ class OkHttpApiAccessLayer extends HttpAccessLayer {
 
         @Override
         public void close() {
-            if(mResponse != null){
+            if(mResponse != null && !mClosed){
                 mResponse.body().close();
+                mClosed = true;
             }
         }
     }
