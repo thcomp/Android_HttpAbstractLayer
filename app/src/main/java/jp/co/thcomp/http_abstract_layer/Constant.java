@@ -17,6 +17,9 @@ public class Constant {
     public static final String MIME_MessagePack = "application/x-msgpack";
 
     public static final String HeaderAcceptEncoding = "Accept-Encoding";
+    public static final String HeaderAuthorization = "Authorization";
     public static final String HeaderContentEncoding = "Content-Encoding";
+    public static final String HeaderCookie = "Cookie";
+    public static final String HeaderSetCookie = "Set-Cookie";
     public static final String HeaderWWWAuthenticate = "WWW-Authenticate";
 }
