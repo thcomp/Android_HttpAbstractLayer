@@ -9,6 +9,8 @@ import java.net.PasswordAuthentication;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import jp.co.thcomp.util.ThreadUtil;
+
 public abstract class HttpAccessLayer {
     public static enum Accessor{
         OkHttp,
@@ -173,6 +175,58 @@ public abstract class HttpAccessLayer {
     public abstract boolean get();
 
     public abstract boolean post();
+
+    public Response getSync(){
+        AbstractResponseCallback responseCallback = mResponseCallback;
+        ThreadUtil.OnetimeSemaphore semaphore = new ThreadUtil.OnetimeSemaphore();
+        mResponseCallback = new SyncResponseCallback(semaphore);
+
+        get();
+        semaphore.start();
+
+        Response ret = ((SyncResponseCallback)mResponseCallback).mResponse;
+        mResponseCallback = responseCallback;
+
+        return ret;
+    }
+
+    public Response postSync(){
+        AbstractResponseCallback responseCallback = mResponseCallback;
+        ThreadUtil.OnetimeSemaphore semaphore = new ThreadUtil.OnetimeSemaphore();
+        mResponseCallback = new SyncResponseCallback(semaphore);
+
+        post();
+        semaphore.start();
+
+        Response ret = ((SyncResponseCallback)mResponseCallback).mResponse;
+        mResponseCallback = responseCallback;
+
+        return ret;
+    }
+
+    private static class SyncResponseCallback implements ResponseCallback {
+        private Response mResponse;
+        private ThreadUtil.OnetimeSemaphore mSemaphore;
+
+        public SyncResponseCallback(ThreadUtil.OnetimeSemaphore semaphore){
+            if(semaphore == null){
+                throw new NullPointerException("semaphore == null");
+            }
+            mSemaphore = semaphore;
+        }
+
+        @Override
+        public void onFail(Response response) {
+            mResponse = response;
+            mSemaphore.stop();
+        }
+
+        @Override
+        public void onSuccess(Response response) {
+            mResponse = response;
+            mSemaphore.stop();
+        }
+    }
 
     public static interface HttpAccessAuthenticator{
 
