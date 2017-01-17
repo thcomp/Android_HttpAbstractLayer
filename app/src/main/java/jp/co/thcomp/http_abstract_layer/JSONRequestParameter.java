@@ -5,6 +5,8 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import jp.co.thcomp.util.LogUtil;
+
 public class JSONRequestParameter extends RequestParameter {
     private String mValue;
 
@@ -23,9 +25,10 @@ public class JSONRequestParameter extends RequestParameter {
         try {
             stream.write(mValue.getBytes());
         } catch (IOException e) {
+            LogUtil.exception(getClass().getSimpleName(), e);
         }
 
-        return false;
+        return true;
     }
 
     @Override

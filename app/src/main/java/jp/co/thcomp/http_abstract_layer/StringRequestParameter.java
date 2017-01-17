@@ -18,7 +18,7 @@ public class StringRequestParameter extends RequestParameter {
         } catch (IOException e) {
         }
 
-        return false;
+        return true;
     }
 
     @Override

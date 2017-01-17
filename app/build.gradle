@@ -40,7 +40,7 @@ uploadArchives {
     repositories {
         mavenDeployer {
             repository url: "file://${repo.absolutePath}"
-            pom.version = '1.1.15'
+            pom.version = '1.1.16'
             pom.groupId = 'jp.co.thcomp'
             pom.artifactId = 'http_abstract_layer'
         }
