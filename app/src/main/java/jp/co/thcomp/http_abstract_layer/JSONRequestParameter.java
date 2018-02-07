@@ -1,5 +1,7 @@
 package jp.co.thcomp.http_abstract_layer;
 
+import com.google.gson.Gson;
+
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -7,7 +9,7 @@ import java.io.OutputStream;
 
 import jp.co.thcomp.util.LogUtil;
 
-public class JSONRequestParameter extends RequestParameter {
+public class JSONRequestParameter<T> extends RequestParameter {
     private String mValue;
 
     public JSONRequestParameter(String value) {
@@ -18,6 +20,11 @@ public class JSONRequestParameter extends RequestParameter {
     public JSONRequestParameter(JSONObject jsonObject) {
         super(""/* ダミー名称 */);
         mValue = jsonObject.toString();
+    }
+
+    public JSONRequestParameter(T jsonObject){
+        super(""/* ダミー名称 */);
+        mValue = new Gson().toJson(jsonObject);
     }
 
     @Override
