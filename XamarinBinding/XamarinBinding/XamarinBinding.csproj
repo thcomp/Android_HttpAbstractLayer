@@ -44,7 +44,7 @@
   <ItemGroup>
     <None Include="Jars\AboutJars.txt" />
     <None Include="Additions\AboutAdditions.txt" />
-    <LibraryProjectZip Include="Jars\http_abstract_layer-1.1.17.aar" />
+    <LibraryProjectZip Include="Jars\http_abstract_layer-1.2.0.aar" />
     <EmbeddedReferenceJar Include="Jars\android_utility-1.1.0.aar" />
   </ItemGroup>
   <ItemGroup>
