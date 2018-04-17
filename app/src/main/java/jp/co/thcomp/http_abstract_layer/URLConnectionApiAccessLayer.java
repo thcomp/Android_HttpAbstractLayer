@@ -15,6 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.zip.GZIPInputStream;
 
 class URLConnectionApiAccessLayer extends HttpAccessLayer {
     protected URLConnectionApiAccessLayer(Context context) {
@@ -357,6 +358,31 @@ class URLConnectionApiAccessLayer extends HttpAccessLayer {
 
         @Override
         public InputStream getEntity() {
+            InputStream ret = null;
+            InputStream tempStream = getRawEntity();
+
+            if(tempStream != null){
+                List<Header> headers = getHeaders(Constant.HeaderContentEncoding);
+
+                if(headers != null && headers.size() > 0){
+                    String contentEncoding = headers.get(0).getValue();
+
+                    if(contentEncoding != null){
+                        if(contentEncoding.equalsIgnoreCase(Constant.SupportEncodingGZip)){
+                            try {
+                                ret = new GZIPInputStream(tempStream);
+                            } catch (IOException e) {
+                            }
+                        }
+                    }
+                }
+            }
+
+            return ret;
+        }
+
+        @Override
+        public InputStream getRawEntity() {
             InputStream ret = null;
 
             try{

@@ -112,7 +112,7 @@
       <excludeFolder url="jar://$MODULE_DIR$/build/intermediates/mockable-android-21.jar!/" />
       <excludeFolder url="jar://$MODULE_DIR$/build/intermediates/mockable-android-23.jar!/" />
     </content>
-    <orderEntry type="jdk" jdkName="Android API 26 Platform" jdkType="Android SDK" />
+    <orderEntry type="jdk" jdkName="Android API 27 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Gradle: com.squareup.okhttp3:okhttp:3.2.0@jar" level="project" />
     <orderEntry type="library" name="Gradle: com.squareup.okio:okio:1.6.0@jar" level="project" />

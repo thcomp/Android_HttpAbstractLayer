@@ -22,4 +22,6 @@ public class Constant {
     public static final String HeaderCookie = "Cookie";
     public static final String HeaderSetCookie = "Set-Cookie";
     public static final String HeaderWWWAuthenticate = "WWW-Authenticate";
+
+    public static final String SupportEncodingGZip = "gzip";
 }

@@ -4,18 +4,31 @@ import java.io.InputStream;
 import java.util.List;
 
 public interface Response {
-    public static interface Header{
-        public String getName();
-        public String getValue();
+    public interface Header{
+        String getName();
+        String getValue();
     }
 
-    public String getRequestUrl();
-    public int getStatusCode();
-    public String getReasonPhrase();
-    public String getMimeType();
-    public List<Header> getHeaders(String name);
-    public InputStream getEntity();
-    public Exception getException();
-    public void setException(Exception exception);
-    public void close();
+    String getRequestUrl();
+    int getStatusCode();
+    String getReasonPhrase();
+    String getMimeType();
+    List<Header> getHeaders(String name);
+
+    /**
+     * 受信したエンティティをContent-Encodingに記載されたコード方法でデコードした状態で返却
+     * Content-Encodingに記載されたエンコード方法が未知の場合、nullを返却
+     * エンコードされていない場合、そのまま返却
+     * @return
+     */
+    InputStream getEntity();
+
+    /**
+     * 受信したエンティティをそのまま返却
+     * @return InputStream
+     */
+    InputStream getRawEntity();
+    Exception getException();
+    void setException(Exception exception);
+    void close();
 }
